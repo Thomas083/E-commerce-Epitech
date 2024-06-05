@@ -1,0 +1,24 @@
+---
+# tasks file for git
+- name: Install git
+  become: true
+  apt:
+    name: git
+    state: present
+
+- name: Create test directory
+  become: true
+  file:
+    path: /E_commerce
+    state: directory
+    owner: cache
+    group: cache
+    mode: "0777"
+
+- name: Clone the repository
+  become: true
+  git:
+    repo: https://github.com/MaxenceLer59/E_Commerce.git
+    dest: /E_commerce
+    clone: yes
+    version: main

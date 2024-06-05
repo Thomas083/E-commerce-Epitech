@@ -1,0 +1,907 @@
+openapi: 3.0.0
+info:
+  title: E_Commerce - Minouland
+  description: |-
+    **Welcome to the Minouland - API - e-commerce - Project**:
+    
+    The goal of the project is to create a generic API for e-commerce merchant sites. In our example, we will sell cats and their gimmick.
+    Our API must also be automatically deployable with Ansible on a Debian (Bullseye) server.
+    
+    - Back-end:
+      - We use the **Laravel** framework to create this API.
+    - Deployment:
+      - We use **Ansible** and it must deploy on a fresh Debian 11 (Bullseye) server.
+
+    Our API respect the **REST** standard and using **JSON** format to represent data.
+    
+    Some useful links:
+    - [The Minouland repository](https://github.com/EpitechMscProPromo2025/T-WEB-600-LIL-6-1-ecommerce-maxence.leroy.git)
+    - [Deployment part](https://github.com/EpitechMscProPromo2025/T-WEB-600-LIL-6-1-ecommerce-maxence.leroy/blob/deployement/readme.md)
+    
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  version: 1.0.00
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:8000
+    description: Server on local
+
+tags:
+  - name: USER
+    description: Operations about Minouland Users
+  - name: PRODUCT
+    description: Operations about Minaloud Product
+  - name: ORDER
+    description: Operations about Minouland Order
+paths:
+  /api/register:
+    post:
+      tags:
+        - USER
+      summary: Register a User
+      description: Register a User in the SQL database
+      requestBody:
+        description: Add the user in the database
+        required: true
+        content:
+          application/json:
+              schema:
+                properties:
+                  login:
+                    type: string
+                    example: Michel2023
+                  password:
+                    type: string
+                    format: password
+                    example: mdp2023
+                  email:
+                    type: string
+                    format: email
+                    example: michel@test.com
+                  firstname:
+                    type: string
+                    example: Michel
+                  lastname:
+                    type: string
+                    example: Calvados
+                  
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  user:
+                    $ref: '#/components/schemas/Users'  
+                  token:
+                    type: string
+                    example: '9|LHBcEFq36A8rntv5lgLNrzC1UDnASBS8WWwovets'
+                    description: Token created when the user was created too
+  
+  /api/login:
+    post:
+      tags:
+        - USER
+      summary: Log to the api
+      description: Check if the user exist and log him
+      requestBody:
+        description: Add the user in the database
+        content:
+            application/json:
+                schema:
+                  properties:
+                    login:
+                      type: string
+                      example: Michel2023
+                    password:
+                      type: string
+                      format: password
+                      example: mdp2023
+        required: true
+      
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  user:
+                    $ref: '#/components/schemas/Users'  
+                  token:
+                    type: string
+                    example: '9|LHBcEFq36A8rntv5lgLNrzC1UDnASBS8WWwovets'
+                    description: Token created when the user was created too 
+        '401':
+          description: Bad Credentials
+
+  /api/logout:
+    get:
+      tags:
+        - USER
+      summary: Log out the User
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+      responses:
+        '204':
+          description: Logged out
+  
+  /api/users:
+    get:
+      tags:
+        - USER
+      summary: Display Current Users Information
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '401':
+          description: Unauthorized
+    put:
+      tags:
+        - USER
+      summary: Update User Data
+      description: Update information of the user
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+      requestBody:
+        description: Update a user in the database
+        content:
+            application/json:
+                schema:
+                  properties:
+                    login:
+                      type: string
+                      example: Michel2024
+                    password:
+                      type: string
+                      format: password
+                      example: mdp2023
+                    email:
+                      type: string
+                      format: email
+                      example: michel@test.com
+                    firstname:
+                      type: string
+                      example: Michel
+                    lastname:
+                      type: string
+                      example: Calvados
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+                schema:
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      example: 3
+                    login:
+                      type: string
+                      example: Michel2024
+                    password:
+                      type: string
+                      format: password
+                      example: mdp2023
+                    email:
+                      type: string
+                      format: email
+                      example: michel@test.com
+                    firstname:
+                      type: string
+                      example: Michel
+                    lastname:
+                      type: string
+                      example: Calvados
+        '401':
+          description: Unauthorized
+
+    delete:
+      tags:
+        - USER
+      summary: Delete the current User
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: User deleted
+        '401':
+          description: Unauthorized
+  
+  /api/products:
+    get:
+      tags:
+        - PRODUCT
+      summary: Lists all the products
+      description: Listing all the products in the SQL database
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+  
+  /api/products/{productId}:
+    get:
+      tags:
+        - PRODUCT
+      summary: Show data from a specific product
+      description: Listing all information of the product Id
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+        - in: path
+          name: productId
+          schema:
+            type: integer
+            format: int64
+            example: 10
+          required: true
+          description: Id of the product to get
+        
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: number
+                    format: int64
+                    example: 200
+                  data: 
+                    $ref: '#/components/schemas/Products' 
+                    
+    put:
+      tags:
+        - PRODUCT
+      summary: Update a Product
+      description: Update data of a specific product by it's Id
+      parameters:
+        - in: header
+          name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          required: true
+          description: 'Authorization: Bearer Token'
+        - in: path
+          name: productId
+          schema:
+            type: integer
+            format: int64
+            example: 10
+          required: true
+          description: Id of the product to update
+      requestBody:
+        content:
+            application/json:
+                schema:
+                  properties:
+                    name:
+                      type: string
+                      example: Cat2023
+                    description:
+                      type: string
+                      example: The super cat of the Year 2023
+                    photo:
+                      type: string
+                      format: photo
+                      example: cat_links_photo.png
+                    price:
+                      type: number
+                      format: double
+                      example: 230
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: number
+                    format: int64
+                    example: 200
+                  data: 
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        format: int64
+                        example: 10
+                      name:
+                        type: string
+                        example: Cat2023
+                      description:
+                        type: string
+                        example: The super cat of the Year 2023
+                      photo:
+                        type: string
+                        format: photo
+                        example: cat_links_photo.png
+                      price:
+                        type: number
+                        format: double
+                        example: 230
+                  message:
+                    type: string
+                    example: Product updated successfully
+        '401':
+          description: Unauthorized
+
+    delete:
+      tags:
+        - PRODUCT
+      summary: Delete a Product
+      description: Delete the product given by the productID from the database
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+        - in: path
+          name: productId
+          schema:
+            type: integer
+            format: int64
+            example: 10
+          required: true
+          description: Id of the product to delete
+        
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: number
+                    format: int64
+                    example: 200
+                  data: 
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        format: int64
+                        example: 10
+                      name:
+                        type: string
+                        example: Cat2023
+                      description:
+                        type: string
+                        example: The super cat of the Year 2023
+                      photo:
+                        type: string
+                        format: photo
+                        example: cat_links_photo.png
+                      price:
+                        type: number
+                        format: double
+                        example: 230
+                  message:
+                    type: string
+                    example: Product deleted successfully
+        '401':
+          description: Unauthorized
+  
+  /api/products/:
+    post:
+      tags:
+        - PRODUCT
+      summary: Add a product
+      description: Store the products in the SQL database
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+      requestBody:
+        content:
+            application/json:
+                schema:
+                  properties:
+                    name:
+                      type: string
+                      example: Cat3000
+                    description:
+                      type: string
+                      example: The super cat of the Year
+                    photo:
+                      type: string
+                      format: photo
+                      example: cat_links_photo.png
+                    price:
+                      type: number
+                      format: double
+                      example: 130
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        format: int64
+                        example: 1
+                      name:
+                        type: string
+                        example: Cat3000
+                      description:
+                        type: string
+                        example: The super cat of the Year
+                      photo:
+                        type: string
+                        format: photo
+                        example: cat_links_photo.png
+                      price:
+                        type: number
+                        format: double
+                        example: 130
+                  message:
+                    type: string
+                    example: Product created successfully
+        '401':
+            description: Unauthorized
+  
+  /api/carts:
+    get:
+      tags:
+          - ORDER
+      summary: List all products in the cart
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Products'
+        '401':
+            description: Unauthorized
+  /api/orders:
+    get:
+      tags:
+          - ORDER
+      summary: List all orders of the current user
+      description: Recover all orders of the current user
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                      format: int64
+                      example: 1
+                    totalPrice:
+                      type: number
+                      format: int64
+                      example: 42.01
+                    creationDate:
+                      type: string
+                      example: "2021-04-01 08:32:00 Z"
+                    products:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Products'
+        '401':
+            description: Unauthorized
+  /api/orders/{order}:
+    get:
+      tags:
+          - ORDER
+      summary: Get Information about a specific order
+      description: Get Information about a specific order
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+        - in: path
+          name: order
+          schema:
+            type: integer
+            format: int64
+            example: 10
+          required: true
+          description: Id of the specific order
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                    id:
+                      type: number
+                      format: int64
+                      example: 1
+                    totalPrice:
+                      type: number
+                      format: int64
+                      example: 42.01
+                    creationDate:
+                      type: string
+                      example: "2021-04-01 08:32:00 Z"
+                    products:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Products'
+        '401':
+            description: Unauthorized
+    delete:
+      tags:
+        - ORDER
+      summary: Remove the spcified product from current cart
+      parameters:
+        - name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          in: header
+          description: 'Authorization: Bearer Token'
+          required: true
+        - in: path
+          name: order
+          schema:
+            type: integer
+            format: int64
+            example: 3
+          required: true
+          description: Id of the order to delete
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Order deleted succesfully"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        format: int64
+                        example: 1
+                      totalPrice:
+                        type: number
+                        format: int64
+                        example: 42.01
+                      creationDate:
+                        type: string
+                        example: "2021-04-01 08:32:00 Z"
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Products'
+        '401':
+            description: Unauthorized
+
+  /api/carts/{product}:
+    post:
+      tags:
+          - ORDER
+      summary: Add a product the the shopping cart
+      description: Create a cart if no current cart
+      parameters:
+        - in: header
+          name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          required: true
+          description: 'Authorization: Bearer Token'
+        - in: path
+          name: productId
+          schema:
+            type: integer
+            format: int64
+            example: 2
+          required: true
+          description: Id of the product to add
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Product added to cart succesfully"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        format: int64
+                        example: 1
+                      totalPrice:
+                        type: number
+                        format: int64
+                        example: 42.01
+                      creationDate:
+                        type: string
+                        example: "2021-04-01 08:32:00 Z"
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Products'
+        '401':
+            description: Unauthorized
+    delete:
+      tags:
+            - ORDER
+      summary: Add a product the the shopping cart
+      description: Create a cart if no current cart
+      parameters:
+        - in: header
+          name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          required: true
+          description: 'Authorization: Bearer Token'
+        - in: path
+          name: productId
+          schema:
+            type: integer
+            format: int64
+            example: 2
+          required: true
+          description: Id of the product to add
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Product removed to cart succesfully"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/Products'
+        '401':
+            description: Unauthorized
+        '404':
+          description: "Error : No current cart foud, please add a product first."
+  /api/carts/validate:
+    put:
+      tags:
+            - ORDER
+      summary: Validate the current user's cart into an order
+      description: Update the status is_validated of the cart (caution, this action is currently irreversible)
+      parameters:
+        - in: header
+          name: oauth_token
+          schema:
+            type: string
+            example: 1|3dXWxzAVq4GTbnq5eJZZxapGWWQl2TjcDEdRIa2B
+          required: true
+          description: 'Authorization: Bearer Token'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Cart validated successfully"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        format: int64
+                        example: 1
+                      totalPrice:
+                        type: number
+                        format: int64
+                        example: 42.01
+                      creationDate:
+                        type: string
+                        example: "2021-04-01 08:32:00 Z"
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Products'
+        '401':
+            description: Unauthorized
+        '404':
+          description: "Error : No current cart foud, please add a product first."
+      
+components:
+  schemas:
+    Users:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 2
+        login:
+          type: string
+          example: Michel2023
+        password:
+          type: string
+          format: password
+          example: mdp2023
+        email:
+          type: string
+          format: email
+          example: michel@test.com
+        firstname:
+          type: string
+          example: Michel
+        lastname:
+          type: string
+          example: Michel
+    
+    Products:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: chat
+        description:
+          type: string
+          format: description
+          example: chat de 10cm
+        photo:
+          type: string
+          format: varchar
+        price:
+          type: number
+          format: double
+          example: 50,3
+        user_id:
+          type: integer
+          description: Id of the user who sale the product
+          format: int64
+          example: 2
+    
+    Order_product:
+      type: object
+      description: Transition table between products and orders
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 3
+        order_id:
+          type: integer
+          description: Id of the order
+          format: int64
+          example: 2
+        product_id:
+          type: integer
+          description: Id of the product
+          format: int64
+          example: 23
+    
+    Orders:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 15
+        user_id:
+          type: integer
+          description: Id of the user which take the order
+          format: int64
+          example: 2
+        is_validated:
+          type: integer
+          format: int64
+          example: 1
+          description: define if the order was made or not (0 not validated and 1 validated)
+        totalPrice:
+          type: number
+          format: double
+          example: 130,56 

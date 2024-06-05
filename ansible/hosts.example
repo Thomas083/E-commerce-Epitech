@@ -1,0 +1,6 @@
+[servers]
+"Your SERVER_VM_IP"
+
+[servers:vars]
+ansible_user="Your SERVER_VM_USER"
+ansible_become_password="Your SERVER_VM_ROOT_PASSWORD"

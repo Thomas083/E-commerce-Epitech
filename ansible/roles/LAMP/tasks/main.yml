@@ -1,0 +1,45 @@
+---
+# tasks file for LAMP
+- name: Install Apache2
+  become: true
+  apt:
+    name: apache2
+    state: present
+
+- name: Start and enable Apache2
+  become: true
+  systemd:
+    name: apache2
+    enabled: yes
+    state: started
+
+- name: Install MariaDB
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - mariadb-server
+      - python3-mysqldb
+    state: present
+
+- name: Create Project database
+  become: true
+  mysql_db:
+    name: "{{ database_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ mariaDB_root_password }}"
+
+- name: Create db_user
+  become: true
+  mysql_user:
+    name: "{{ mariaDB_user }}"
+    password: "{{ mariaDB_password }}"
+    priv: "{{ database_name }}.*:ALL"
+    login_user: root
+    login_password: "{{ mariaDB_root_password }}"
+
+- name: Restart Apache2
+  become: true
+  systemd:
+    name: apache2
+    state: restarted

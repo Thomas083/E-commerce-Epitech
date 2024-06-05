@@ -1,0 +1,47 @@
+---
+# tasks file for base
+- name: Preinstallation for php
+  become: true
+  ansible.builtin.apt:
+    name:
+      - software-properties-common
+      - ca-certificates
+      - apt-transport-https
+      - gnupg
+
+- name: "Repo PHP part 1"
+  become: true
+  ansible.builtin.shell: echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/sury-php.list
+
+- name: "Repo PHP part 2"
+  become: true
+  ansible.builtin.shell: wget -qO - https://packages.sury.org/php/apt.gpg | apt-key add -
+
+- name: "Updating the repo"
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Installation PHP
+  become: true
+  ansible.builtin.apt:
+    name: php
+    state: present
+
+- name: Install modules
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - php
+      - php-cli
+      - php-fpm
+      - php-json
+      - php-mysql
+      - php-zip
+      - php-gd
+      - php-mbstring
+      - php-curl
+      - php-xml
+      - php-pear
+      - php-bcmath
+      - php-intl

@@ -1,0 +1,43 @@
+---
+# tasks file for LARAVEL
+- name: Copy .env to the machine
+  become: true
+  copy:
+    src: ~/ansible/.env
+    dest: /E_commerce/app
+    mode: "0777"
+
+# - name: Copy .env.testing to the machine
+#   become: true
+#   copy:
+#     src: /home/web/.env.testing
+#     dest: /E_commerce/app
+#     mode: "0777"
+
+- name: Acces Right
+  become: true
+  shell: "chown -R cache:cache /E_commerce/app"
+
+- name: "Composer install"
+  become: yes
+  become_user: cache
+  composer:
+    command: install
+    global_command: false
+    working_dir: /E_commerce/app/
+
+- name: Composer install fakerphp/faker for the test
+  shell: "composer require fakerphp/faker --dev"
+  args:
+    chdir: "/E_commerce/app/"
+
+- name: PHP artisan key:generate
+  shell: "php artisan key:generate"
+  args:
+    chdir: "/E_commerce/app/"
+
+- name: Migration
+  become_user: cache
+  shell: "php artisan migrate --seed"
+  args:
+    chdir: "/E_commerce/app/"

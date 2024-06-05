@@ -1,0 +1,10 @@
+---
+- hosts: servers
+  roles:
+    - OS-CHECK
+    - PHP 
+    - LAMP 
+    - NODE 
+    - GIT 
+    - COMPOSER 
+    - LARAVEL

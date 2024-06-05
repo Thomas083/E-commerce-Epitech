@@ -1,0 +1,6 @@
+---
+# tasks file for os-check
+- name: Check if OS is Debian 11 (Bullseye)
+  when: not ansible_distribution == 'Debian' or ansible_distribution_release != 'bullseye'
+  fail:
+    msg: "The operating system is not Debian 11 (Bullseye)."

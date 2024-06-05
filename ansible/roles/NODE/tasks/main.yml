@@ -1,0 +1,7 @@
+---
+# tasks file for node
+- name: Install Node.js
+  become: true
+  apt:
+    name: nodejs
+    state: present

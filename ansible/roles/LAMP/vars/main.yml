@@ -1,0 +1,7 @@
+---
+# vars file for LAMP
+mariaDB_root_password: miaou
+mariaDB_user: miaou
+mariaDB_password: miaou
+database_name: minouland
+#databaseTest_name: minoulandtest
